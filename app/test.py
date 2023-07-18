@@ -49,8 +49,8 @@ class ControlData:
         df['etc'] = User.etc
 
         df.to_csv("household.csv", index=False)
+        del User
         print(df)
-        del df
 
     # 데이터 불러오기(Read)
     def readAllData(self, User):

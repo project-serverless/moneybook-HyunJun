@@ -14,6 +14,20 @@ class User:
         self.category = category
         self.price = price
         self.etc = etc
+    
+    def initData():
+       global boardNum
+       global date 
+       global profitOrSpending
+       global category
+       global price 
+       global etc
+       boardNum = []
+       date = []
+       profitOrSpending = []
+       category = []
+       price = []
+       etc = [] 
 
     def getBoardNum(self):
         return self.boardNum

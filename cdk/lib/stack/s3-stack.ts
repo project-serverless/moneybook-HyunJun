@@ -8,7 +8,7 @@ export class S3BaseStack extends cdk.Stack {
         super(scope, id, props);
 
         new s3.Bucket(this, 's3Stack', {
-            bucketName: 'nseo-icn-moneybook',
+            bucketName: 'moneybook-bucket-cho',
             publicReadAccess: false,
             blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
             encryption: s3.BucketEncryption.S3_MANAGED,

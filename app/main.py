@@ -47,8 +47,8 @@ class ControlData:
         df['category'] = User.category
         df['price'] = User.price
         df['etc'] = User.etc
-
-        df.to_csv("moneyBook.csv", index=False)
+        df.to_csv("app/moneyBook.csv", index=False)
+        
 
     # 데이터 불러오기(Read)
     def readAllData(self, User):
@@ -92,22 +92,13 @@ class ControlData:
         df['etc'] = ur.etc
 
         df.to_csv("moneyBook.csv", index=False)
+        ur.initData()
 
     # 데이터 삭제
     def deleteData(self, User, df):
         boardNum = int(input("삭제 할 거래번호 선택 : \n"))
-        # Drop the row with the specified boardNum
         dfDeleted = df.drop(df[df['boardNum'] == boardNum].index)
 
-        # Clear the user's lists
-        User.boardNum.clear()
-        User.date.clear()
-        User.profitOrSpending.clear()
-        User.category.clear()
-        User.price.clear()
-        User.etc.clear()
-
-        # Iterate over the modified DataFrame to update the user's lists
         for row in dfDeleted.itertuples(index=False):
             User.boardNum.append(row[0])
             User.date.append(row[1])
@@ -123,39 +114,54 @@ class ControlData:
         df['price'] = User.price
         df['etc'] = User.etc
 
-        df.to_csv("moneyBook.csv", index=False)
+        df.to_csv("app/moneyBook.csv", index=False)
+        User.initData()
 
 
 def main():
-    ur = moneyBookData.User
     print("=============================== 데이터 취득 ==================================")
+    ur = moneyBookData.User
     cd = ControlData
-    df = cd.readCsvData(self=ControlData ,file_path='moneyBook.csv', User=ur)
+    df = cd.readCsvData(self=ControlData ,file_path='app/moneyBook.csv', User=ur)
     print("============================================================================")
     selection = int(input("1. 데이터 저장 / 2. 데이터 불러오기 / 3. 데이터 수정 /4. 데이터 삭제 / 5. 종료\n"))
     # 데이터 저장
     if selection == 1:
         cd.createData(self=cd, User=ur)
-        del ur
 
     # 데이터 불러오기
     elif selection == 2:
+        ur = moneyBookData.User
+        print("=============================== 데이터 취득 ==================================")
+        cd = ControlData
+        df = cd.readCsvData(self=ControlData ,file_path='app/moneyBook.csv', User=ur)
+        print("============================================================================")
         cd.readAllData(self=cd, User=ur)
-        del ur
+ 
 
     # 데이터 수정
     elif selection == 3:
+        ur = moneyBookData.User
+        print("=============================== 데이터 취득 ==================================")
+        cd = ControlData
+        df = cd.readCsvData(self=ControlData ,file_path='app/moneyBook.csv', User=ur)
+        print("============================================================================")
         cd.modifyData(self=cd, ur=ur)
-        del ur
 
     # 데이터 삭제
     elif selection == 4:
+        ur = moneyBookData.User
+        print("=============================== 데이터 취득 ==================================")
+        cd = ControlData
+        df = cd.readCsvData(self=ControlData ,file_path='app/moneyBook.csv', User=ur)
+        print("============================================================================")
         cd.deleteData(self=cd, User=ur, df=df)
-        del ur
 
     else:
         return 0
-
+    
     main()
 
-main()
+
+if __name__ == "__main__":
+    main()
