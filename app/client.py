@@ -1,6 +1,5 @@
 import datetime as dt
 import pandas as pd
-import moneyBookData
 
 boardNum = []
 date = []
