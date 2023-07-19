@@ -1,5 +1,12 @@
 import gradio as gr
 import pandas as pd
+import dotenv
+import logging
+import boto3
+from botocore.exceptions import ClientError
+import os
+
+dotenv.load_dotenv(".env", override=True)
 
 boardNum = []
 date = []
@@ -8,7 +15,27 @@ category = []
 price = []
 etc = []
 
-file_path="app/moneyBook.csv"
+def upload_file(file_name, bucket, object_name=None):
+    """Upload a file to an S3 bucket
+
+    :param file_name: File to upload
+    :param bucket: Bucket to upload to
+    :param object_name: S3 object name. If not specified then file_name is used
+    :return: True if file was uploaded, else False
+    """
+
+    # If S3 object_name was not specified, use file_name
+    if object_name is None:
+        object_name = os.path.basename(file_name)
+
+    # Upload the file
+    s3_client = boto3.client('s3')
+    try:
+        response = s3_client.upload_file(file_name, bucket, object_name)
+    except ClientError as e:
+        logging.error(e)
+        return False
+    return True
 
 # 데이터 초기화
 def initData():
@@ -25,6 +52,7 @@ def initData():
     price = []
     etc = []
 
+# ================ CRUD function ================
 # 데이터 추가(Create)
 def createData(inputDate, inputPos, inputCategory, inputPrice : int, inputEtc):
     initData()
@@ -46,7 +74,7 @@ def createData(inputDate, inputPos, inputCategory, inputPrice : int, inputEtc):
     df['price'] = price
     df['etc'] = etc
     df.to_csv("app/moneyBook.csv", index=False)
-    initData()
+    upload_file('app/moneyBook.csv', 'moneybook-bucket-cho', 'moneyBook.csv')
 
 # 데이터 불러오기(Read)
 def readCsvData():
@@ -79,6 +107,7 @@ def modifyData(selectBoardNum,inputDate,inputPos,inputCategory,inputPrice,inputE
         df['price'] = price
         df['etc'] = etc
         df.to_csv("app/moneyBook.csv", index=False)
+        upload_file('app/moneyBook.csv', 'moneybook-bucket-cho', 'moneyBook.csv')
 
     else:
         print("입력하신 거래번호가 존재하지 않습니다.")
@@ -105,9 +134,12 @@ def deleteData(selectBoardNum):
         df['price'] = price
         df['etc'] = etc
         dfDeleted.to_csv("app/moneyBook.csv", index=False)
+        upload_file('app/moneyBook.csv', 'moneybook-bucket-cho', 'moneyBook.csv')
     else:
         print("입력하신 거래번호가 존재하지 않습니다.")
+# ================ CRUD function ================
 
+# ================ Gradio function ================
 # GUI의 입력 버튼 액션
 def createAction():
     inputDate = gr.Textbox(label="날짜", placeholder="YYYY-MM-DD")
@@ -144,7 +176,6 @@ def modifyAction():
     correctionButton.click(modifyData, 
                            inputs=([selectBoardNum,inputDate,inputPos,inputCategory,inputPrice,inputEtc]),
                            outputs=None)
-    # index_interface = gr.Interface(fn = checkIndex, inputs=None, outputs="dataframe", title="가계부", allow_flagging='never')
 
 ## GUI의 삭제 버튼 액션
 def deleteAction():
@@ -154,7 +185,7 @@ def deleteAction():
     correctionButton.click(deleteData, 
                            inputs=([selectBoardNum]), 
                            outputs=None)
-    # gr.Interface(fn=deleteData, inputs=([file_path, selectBoardNum]), outputs="dataframe", allow_flagging='never')
+# ================ Gradio function ================
 
 def interface():
     with gr.Blocks() as app_interface:
