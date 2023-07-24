@@ -16,7 +16,7 @@ etc = []
 
 # ================ AWS function ================
 dotenv.load_dotenv(".env", override=True)
-
+# S3 버킷에 데이터 업로드
 def upload_file(file_name, bucket, object_name=None):
     """Upload a file to an S3 bucket
 
@@ -39,6 +39,7 @@ def upload_file(file_name, bucket, object_name=None):
         return False
     return True
 
+# S3 버킷에 데이터 생성
 def create_new_file(file_name):
     lambda_client = boto3.client('lambda')
     lambda_client.invoke(FunctionName='createCSVFile',
